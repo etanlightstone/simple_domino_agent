@@ -4,8 +4,9 @@ Simple Quote Agent — core agent definition and tool functions.
 Defines a pydantic-ai Agent that responds to questions with random philosophy
 or science quotes. Reads all configuration (model provider, base_url, system
 prompt, retries) from ai_system_config.yaml. When the model provider is "vllm"
-(i.e. a Domino-hosted LLM), the agent fetches a short-lived access token from
-the Domino runtime for authentication.
+or "llm_gateway" (i.e. a Domino-hosted LLM), the agent fetches a short-lived
+access token from the Domino runtime for authentication. "vllm" requires an
+empty model name; "llm_gateway" routes on the model name, so it's kept.
 
 This file is imported by chat_app.py (production) and dev_eval_simplest_agent.py
 (batch evaluation). Call create_agent() to get a fresh agent instance.
@@ -102,13 +103,16 @@ def create_agent():
     # provider (e.g. "openai") still tried to hit the Domino-runtime-only
     # localhost:8899 token endpoint and failed outside Domino.
     selected_model = oai_model
-    if config['model']['provider'] == 'vllm':
+    provider_name = config['model']['provider']
+    if provider_name in ('vllm', 'llm_gateway'):
         VLLM_API_KEY = requests.get("http://localhost:8899/access-token").text
         provider = OpenAIProvider(
             base_url=BASE_URL,
             api_key=VLLM_API_KEY,
         )
-        selected_model = OpenAIModel("", provider=provider)  # have to leave model name blank?
+        # vllm requires an empty model name; llm_gateway routes on it, so keep it.
+        model_name = "" if provider_name == 'vllm' else oai_model
+        selected_model = OpenAIModel(model_name, provider=provider)
 
     m = TestModel(custom_output_text="This is the answer from fake LLM")
 

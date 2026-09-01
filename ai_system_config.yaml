@@ -11,10 +11,10 @@
 #   max_tokens: 100096  # Maximum tokens in response
 
 model:
-  provider: "vllm"  # openai, anthropic, azure, etc.
-  name: "qwen-3-4b"  # Model name/version
-  full_name: "qwen-3-4b"  # Full model identifier
-  base_url: "https://genai2-620r.engineering-dev.domino.tech/endpoints/c611d820-56c2-4b7a-b9b5-1b450852d13b/v1"
+  provider: "llm_gateway"  # openai, vllm, llm_gateway, anthropic, azure, etc.
+  name: "gpt-5.4-nano"  # Model name/version
+  full_name: "gpt-5.4-nano"  # Full model identifier
+  base_url: "https://apps.cloud-dogfood.domino.tech/apps/llm_gateway/v1"
   temperature: 0.1  # Controls randomness (0.0-2.0)
   max_tokens: 10096  # Maximum tokens in response
 
